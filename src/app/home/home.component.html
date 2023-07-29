@@ -1,0 +1,35 @@
+
+<form [formGroup]="checkoutForm" class="fs-3">
+
+    <p class="my-4">¿ Qué quieres hacer ?</p>
+
+    <div>
+        <input id="website" type="checkbox" formControlName="website" 
+            class="wr-4 hr-4 me-3"
+            (click)="onClick(0)">
+        <label for="website">
+            Una página web (500€)
+        </label>
+    </div>
+
+    <div>
+        <input id="consulting" type="checkbox" formControlName="consulting" 
+            class="wr-4 hr-4 me-3"
+            (click)="onClick(1)">
+        <label for="consulting">
+            Una consultoría SEO (300€)
+        </label>
+    </div>
+
+    <div>
+        <input id="marketing" type="checkbox" formControlName="marketing" 
+            class="wr-4 hr-4 me-3"
+            (click)="onClick(2)">
+        <label for="marketing">
+            Una campaña de Google Ads (200€)
+        </label>
+    </div>
+    
+    <p class="my-4">Precio: {{total}}€</p>
+
+</form>
