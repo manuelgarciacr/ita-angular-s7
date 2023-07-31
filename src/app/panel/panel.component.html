@@ -1,0 +1,32 @@
+<form [formGroup]="checkoutForm" novalidate class="was-validated border border-5 border-black rounded-4 fs-3 my-3 px-3 py-5">
+
+    <div class="row mb-3">
+        <label for="pages" class="col-10 offset-1 col-sm-7 mb-2">
+            Número de páginas
+        </label>
+        <div class="col-8 offset-3 col-sm-3 offset-sm-0">
+            <input id="pages" type="number" step="1" min=1 required formControlName="pages"
+                (keydown)="onKeydown($event)" 
+                (input)="setCount()" class="form-control">
+        </div>
+        <div class="text-danger text-end col-10 offset-1 col-sm-9 offset-sm-2" *ngIf="checkoutForm.get('pages')!.invalid" >  <!-- && checkoutForm.get('pages')!.touched -->
+            Mínimo una página.
+        </div>
+    </div>
+
+    <div class="row">
+        <label for="languages" class="col-10 offset-1 col-sm-7 mb-2">
+            Número de idiomas
+        </label>
+        <div class="col-8 offset-3 col-sm-3 offset-sm-0">
+            <input id="languages" type="number" step="1" min=1 required formControlName="languages" 
+                (keydown)="onKeydown($event)" 
+                (input)="setCount()" class="form-control">
+        </div>
+        
+        <div class="text-danger text-end col-10 offset-1 col-sm-9 offset-sm-2" *ngIf="checkoutForm.get('languages')!.invalid" >
+            Mínimo un idioma.
+        </div>
+    </div>
+
+</form>

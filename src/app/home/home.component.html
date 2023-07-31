@@ -1,9 +1,9 @@
 
-<form [formGroup]="checkoutForm" class="fs-3">
+<form [formGroup]="checkoutForm" class="fs-3 col-12">
 
     <p class="my-4">¿ Qué quieres hacer ?</p>
 
-    <div>
+    <div class="d-flex align-items-center">
         <input id="website" type="checkbox" formControlName="website" 
             class="wr-4 hr-4 me-3"
             (click)="onClick(0)">
@@ -11,8 +11,9 @@
             Una página web (500€)
         </label>
     </div>
+    <app-panel *ngIf="status[0]" (changeEmitter)="panelChange($event)"></app-panel>
 
-    <div>
+    <div class="d-flex align-items-center">
         <input id="consulting" type="checkbox" formControlName="consulting" 
             class="wr-4 hr-4 me-3"
             (click)="onClick(1)">
@@ -21,7 +22,7 @@
         </label>
     </div>
 
-    <div>
+    <div class="d-flex align-items-center">
         <input id="marketing" type="checkbox" formControlName="marketing" 
             class="wr-4 hr-4 me-3"
             (click)="onClick(2)">
@@ -30,6 +31,5 @@
         </label>
     </div>
     
-    <p class="my-4">Precio: {{total}}€</p>
-
+    <p class="my-4">Precio: <span [class.text-danger]="!priceOk">{{ total }}€</span></p>
 </form>
