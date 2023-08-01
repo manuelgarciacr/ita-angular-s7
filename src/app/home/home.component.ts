@@ -6,7 +6,7 @@ import { PricesService } from '../services/prices.service';
     selector: 'app-home',
     templateUrl: './home.component.html',
     styles: [
-        ':host {display: flex; justify-content: center} form {min-width: 20rem; max-width: 42rem}'
+        ':host {display: flex; justify-content: center} form {min-width: 24rem; max-width: 42rem}'
     ],
 })
 export class HomeComponent {

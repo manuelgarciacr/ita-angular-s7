@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { PanelComponent } from './panel/panel.component';
 import { LandingComponent } from './landing/landing.component';
+import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
     declarations: [
@@ -20,7 +21,8 @@ import { LandingComponent } from './landing/landing.component';
         BrowserModule,
         AppRoutingModule,
         ReactiveFormsModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
+        NgbModalModule
     ],
     providers: [],
     bootstrap: [AppComponent]

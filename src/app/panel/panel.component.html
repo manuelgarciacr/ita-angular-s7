@@ -4,10 +4,10 @@
         class="was-validated border border-5 border-black rounded-4 fs-3 my-3 px-3 py-5">
 
         <div class="row mb-3 align-items-baseline">
-            <label for="pages" class="col-10 offset-1 col-sm-5 mb-2">
+            <label for="pages" class="col-10 offset-1 col-sm-6 offset-sm-0 mb-2">
                 Número de páginas
             </label>
-            <div class="col-8 offset-3 col-sm-5 offset-sm-0 d-flex">
+            <div class="col-8 offset-3 col-sm-6 offset-sm-0 d-flex">
                 <button class="btn btn-warning fw-bolder"
                     (click)="add('pages')">
                     <span>&#xFF0B;</span>
@@ -19,6 +19,8 @@
                     (click)="remove('pages')">
                     <span>&#x2014;</span>
                 </button>
+                <i class="bi bi-info-circle-fill btn ms-2 p-0 fs-1 text-secondary"
+                    (click)="open(content, 'páginas')"></i>
             </div>
             <div class="text-danger text-end col-10 offset-1 col-sm-9 offset-sm-2" *ngIf="checkoutForm.get('pages')!.invalid" >  <!-- && checkoutForm.get('pages')!.touched -->
                 Mínimo una página.
@@ -26,10 +28,10 @@
         </div>
 
         <div class="row align-items-baseline">
-            <label for="languages" class="col-10 offset-1 col-sm-5 mb-2">
+            <label for="languages" class="col-10 offset-1 col-sm-6 offset-sm-0 mb-2">
                 Número de idiomas
             </label>
-            <div class="col-8 offset-3 col-sm-5 offset-sm-0 d-flex">
+            <div class="col-8 offset-3 col-sm-6 offset-sm-0 d-flex">
                 <button class="btn btn-warning fw-bolder"
                     (click)="add('languages')">
                     <span>&#xFF0B;</span>
@@ -41,6 +43,8 @@
                     (click)="remove('languages')">
                     <span>&#x2014;</span>
                 </button>
+                <i class="bi bi-info-circle-fill btn ms-2 p-0 fs-1 text-secondary"
+                    (click)="open(content, 'idiomas')"></i> 
             </div>
             
             <div class="text-danger text-end col-10 offset-1 col-sm-9 offset-sm-2" *ngIf="checkoutForm.get('languages')!.invalid" >
@@ -49,4 +53,11 @@
         </div>
 
     </form>
+
+    <ng-template #content let-modal class="bottom-0 mb-3 ">
+        <div class="modal-body rounded-3 border border-black border-5">
+            <p class="fs-3 text-center h-100 m-0">En este componente debe indicar el número de {{ modalText }} que tendrá su sitio web.</p>
+        </div>
+    </ng-template>
+    
 </div>

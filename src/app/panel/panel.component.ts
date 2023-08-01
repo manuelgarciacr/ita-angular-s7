@@ -1,8 +1,9 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, TemplateRef } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { PricesService } from '../services/prices.service';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { minTextNumberValidator } from '../utils/CustomValidators';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'app-panel',
@@ -19,8 +20,12 @@ import { minTextNumberValidator } from '../utils/CustomValidators';
 export class PanelComponent implements OnInit {
     @Output() private changeEmitter = new EventEmitter<[number, boolean]>() // Total price and panel error if true
     protected checkoutForm: FormGroup;
+    protected modalText = 'páginas';
 
-    constructor(private formBuilder: FormBuilder, protected pricesService: PricesService) {
+    constructor(private formBuilder: FormBuilder, 
+        protected pricesService: PricesService,
+        protected modalService: NgbModal) {
+
         this.checkoutForm = this.formBuilder.group({
             pages: [1, [minTextNumberValidator(1)]],
             languages: new FormControl(1, minTextNumberValidator(1)) // Its Ok too
@@ -62,4 +67,9 @@ export class PanelComponent implements OnInit {
         control.setValue(newValue.toString());
         this.setCount()
     }
+
+    protected open = (content: TemplateRef<unknown>, text: string) => {
+        this.modalText = text;
+		this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title', animation: true, size: 'lg', windowClass: 'cls-modal' })
+	}
 }
