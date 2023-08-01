@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { PricesService } from '../prices.service';
+import { PricesService } from '../services/prices.service';
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
-    styles: [':host {display: flex; justify-content: center} form {min-width: 20rem; max-width: 40rem}']
+    styles: [
+        ':host {display: flex; justify-content: center} form {min-width: 20rem; max-width: 42rem}'
+    ],
 })
 export class HomeComponent {
     protected status = [false, false, false]; // Checkbox status
