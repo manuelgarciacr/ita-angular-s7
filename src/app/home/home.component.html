@@ -1,37 +1,83 @@
+<div class="row">
+    <!-- was-validated class needed to bs5 styling valid fields (.was-validated .form-control:valid) -->
+    <form [formGroup]="checkoutForm" class="fs-3 was-validated col-12 col-md-8 col-xl-9 gap-2">
 
-<form [formGroup]="checkoutForm" class="fs-3 col-12">
+        <h1 class="my-4">Presupuesto</h1>
+        <hr>
+        <div>
+            <label for="name" class="d-none d-sm-inline-block col-10 offset-1">
+                Nombre del presupuesto *:
+            </label>
+            <div class="col-10 offset-1 col-sm-9 offset-sm-2 me-3 my-3">
+                <!-- form-control class needed to bs5 styling valid fields (.was-validated .form-control:valid) -->
+                <!-- form-control has width: 100%, the bs5 grid format must be set on the parent element (usually an input group)-->
+                <input id="name" formControlName="name" placeholder="Nombre presupuesto" class="form-control fs-3">
+            </div>
+            <div class="text-danger text-end col-10 offset-1 col-sm-9 offset-sm-2 my-3"
+                *ngIf="checkoutForm.get('name')!.invalid && checkoutForm.get('name')!.touched">
+                {{ getError('name') | json }}
+            </div>
+        </div>
 
-    <p class="my-4">¿ Qué quieres hacer ?</p>
+        <div>
+            <label for="customer" class="d-none d-sm-inline-block col-10 offset-1">
+                Nombre del cliente *:
+            </label>
+            <div class="col-10 offset-1 col-sm-9 offset-sm-2 me-3 my-3">
+                <!-- form-control class needed to bs5 styling valid fields (.was-validated .form-control:valid) -->
+                <!-- form-control has width: 100%, the bs5 grid format must be set on the parent element (usually an input group)-->
+                <input id="customer" formControlName="customer" placeholder="Nombre cliente" class="form-control fs-3">
+            </div>
+            <div class="text-danger text-end col-10 offset-1 col-sm-9 offset-sm-2 my-3"
+                *ngIf="checkoutForm.get('customer')!.invalid && checkoutForm.get('customer')!.touched">
+                {{ getError('customer') | json }}
+            </div>
+        </div>
 
-    <div class="d-flex align-items-center">
-        <input id="website" type="checkbox" formControlName="website" 
-            class="flex-shrink-0 wr-4 hr-4 me-3"
-            (click)="onClick(0)">
-        <label for="website">
-            Una página web (500€)
-        </label>
-    </div>
-    <app-panel *ngIf="status[0]" (changeEmitter)="panelChange($event)"></app-panel>
+        <div class="d-flex align-items-center my-3">
+            <input id="website" type="checkbox" formControlName="website" class="flex-shrink-0 wr-4 hr-4 me-3"
+                (click)="onClick('website')">
+            <label for="website">
+                Una página web (500€)
+            </label>
+        </div>
+        <app-panel *ngIf="checkoutForm.get('website')?.value" (changeEmitter)="pricesChange($event)"></app-panel>
 
-    <div class="d-flex align-items-center">
-        <input id="consulting" type="checkbox" formControlName="consulting" 
-            class="flex-shrink-0 wr-4 hr-4 me-3"
-            (click)="onClick(1)">
-        <label for="consulting">
-            Una consultoría SEO (300€)
-        </label>
-    </div>
+        <div class="d-flex align-items-center my-3">
+            <input id="consulting" type="checkbox" formControlName="consulting" class="flex-shrink-0 wr-4 hr-4 me-3"
+                (click)="onClick('consulting')">
+            <label for="consulting">
+                Una consultoría SEO (300€)
+            </label>
+        </div>
 
-    <div class="d-flex align-items-center">
-        <input id="marketing" type="checkbox" formControlName="marketing" 
-            class="flex-shrink-0 wr-4 hr-4 me-3"
-            (click)="onClick(2)">
-        <label for="marketing">
-            Una campaña de Google Ads (200€)
-        </label>
-    </div>
-    
-    <p class="my-4">Precio: <span [class.text-danger]="!priceOk">{{ total }}€</span></p>
+        <div class="d-flex align-items-center my-3">
+            <input id="marketing" type="checkbox" formControlName="marketing" class="flex-shrink-0 wr-4 hr-4 me-3"
+                (click)="onClick('marketing')">
+            <label for="marketing">
+                Una campaña de Google Ads (200€)
+            </label>
+        </div>
 
-    <a class="btn btn-primary fs-2 my-5 col-12 col-sm-6 offset-sm-6 col-lg-2 offset-lg-10" href="/home">Inicio</a>
-</form>
+        <div class="d-flex align-items-center my-3">
+            <label for="total">
+                Precio *:
+            </label>
+            <input id="total" formControlName="total" readonly
+                class="form-control flex-shrink-0 text-end fs-3 w-25 mx-2" [class.ng-touched]="checkoutForm.get('website')?.touched
+                || checkoutForm.get('consulting')?.touched
+                || checkoutForm.get('marketing')?.touched">
+            <label>€</label>
+        </div>
+
+        <sub class="my-4">* Dato necesario para añadir el presupuesto.</sub>
+
+        <div class="mt-5">
+            <a class="btn btn-secondary fs-2 col-12 mb-2 mb-sm-0 col-sm-6 offset-lg-4 col-lg-4" href="/home">Inicio</a>
+            <a class="btn btn-primary fs-2 col-12 col-sm-6 col-lg-4 " (click)="addBudget()"
+                [class.disabled]="!checkoutForm.valid">Añadir</a>
+        </div>
+    </form>
+
+    <app-budget-list class="cls-budgets-list col-12 col-md-4 col-xl-3 mt-4 mx-auto mx-xl-5"></app-budget-list>
+</div>

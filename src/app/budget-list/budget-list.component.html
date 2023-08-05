@@ -1,0 +1,20 @@
+<h1 class="my-4">Presupuestos Guardados</h1>
+<hr>
+<div *ngFor="let budget of pricesService.budgets" class="card">
+    <div class="card-body">
+        <h5 class="card-title">Presupuesto: {{ budget.name }}</h5>
+        <h5 class="card-subtitle">Cliente: {{ budget.customer }}</h5>
+        <hr>
+        <div *ngIf="budget.website > 0" class="mb-2">
+            <p class="card-text my-0">Sitio web: <span class="float-end">{{ budget.website }}</span></p>
+            <p class="card-text ms-4 my-0" *ngIf="budget.pages > 0">Nº de páginas: {{ budget.pages }}</p>
+            <p class="card-text ms-4 my-0" *ngIf="budget.languages > 0">Nº de idiomas: {{ budget.languages }}</p>
+        </div>
+        <p class="card-text mb-2" *ngIf="budget.consulting > 0">Consultoría SEO: <span class="float-end">{{ budget.consulting }}</span></p>
+        <p class="card-text mb-2" *ngIf="budget.marketing > 0">Campaña Google Ads: <span class="float-end">{{ budget.marketing }}</span></p>
+        <hr>
+        <p class="card-text mb-2 float-end">Total: <span class="ms-4 float-end">{{ budget.website + budget.consulting + budget.marketing }}</span></p>
+        <br class="clearfix">
+        <a (click)="remove(budget.name)" class="btn btn-danger mt-2">Eliminar</a>
+    </div>
+</div>

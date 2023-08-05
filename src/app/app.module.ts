@@ -9,13 +9,15 @@ import { HomeComponent } from './home/home.component';
 import { PanelComponent } from './panel/panel.component';
 import { LandingComponent } from './landing/landing.component';
 import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { BudgetListComponent } from './budget-list/budget-list.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         HomeComponent,
         PanelComponent,
-        LandingComponent
+        LandingComponent,
+        BudgetListComponent
     ],
     imports: [
         BrowserModule,

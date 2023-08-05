@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, TemplateRef } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output, TemplateRef } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { PricesService } from '../services/prices.service';
 import { animate, style, transition, trigger } from '@angular/animations';
@@ -17,7 +17,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
         ])
     ]
  })
-export class PanelComponent implements OnInit {
+export class PanelComponent implements OnInit, OnDestroy {
     @Output() private changeEmitter = new EventEmitter<[number, boolean]>() // Total price and panel error if true
     protected checkoutForm: FormGroup;
     protected modalText = 'páginas';
@@ -32,8 +32,14 @@ export class PanelComponent implements OnInit {
         });
     }
 
-    ngOnInit(): void {
-        this.setCount(); // This call can also be made inside the constructor, but it is not a good practice.
+    ngOnInit(): void {       
+        this.setCount(); // This call can perhaps also be made within the constructor, but it's not good practice..
+    }
+
+    ngOnDestroy(): void {
+        // NG0100: ExpressionChangedAfterItHasBeenCheckedError:
+        // Resetting the counters before exiting prevents the NG0100 error
+        this.pricesService.resetBudget()
     }
 
     protected onKeydown = (ev: KeyboardEvent) => /^[\D]$/.test(ev.key)
@@ -45,7 +51,7 @@ export class PanelComponent implements OnInit {
         
         this.pricesService.pagesCnt = pages;
         this.pricesService.languagesCnt = languages;
-        this.pricesService.webPriceOk = this.checkoutForm.valid;
+
         this.changeEmitter.emit(this.pricesService.totalPrice)
     };
 

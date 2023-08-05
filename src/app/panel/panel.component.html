@@ -1,20 +1,24 @@
 <div @openClose>
+    <!-- was-validated class needed to bs5 styling valid fields (.was-validated .form-control:valid) -->
     <form [formGroup]="checkoutForm" novalidate 
         @openClose
-        class="was-validated border border-5 border-black rounded-4 fs-3 my-3 px-3 py-5">
+        class="was-validated border border-5 border-black rounded-4 container-fluid fs-3 my-3 px-3 py-5">
 
         <div class="row mb-3 align-items-baseline">
-            <label for="pages" class="col-10 offset-1 col-sm-6 offset-sm-0 mb-2">
+            <label for="pages" class="col-10 offset-1 mb-2">
                 Número de páginas
             </label>
-            <div class="col-8 offset-3 col-sm-6 offset-sm-0 d-flex">
+
+            <div class="col-8 offset-3 d-flex">
                 <button class="btn btn-warning fw-bolder"
                     (click)="add('pages')">
                     <span>&#xFF0B;</span>
                 </button>
+                <!-- form-control class needed to bs5 styling valid fields (.was-validated .form-control:valid) -->
+                <!-- form-control has width: 100%, the bs5 grid format must be set on the parent element (usually an input group)-->
                 <input id="pages" inputmode="numeric" formControlName="pages"
                     (keydown)="onKeydown($event)" 
-                    (input)="setCount()" class="form-control fs-3">
+                    (input)="setCount()" class="form-control ng-touched fs-3">
                 <button class="btn btn-warning fw-bolder"
                     (click)="remove('pages')">
                     <span>&#x2014;</span>
@@ -28,17 +32,19 @@
         </div>
 
         <div class="row align-items-baseline">
-            <label for="languages" class="col-10 offset-1 col-sm-6 offset-sm-0 mb-2">
+            <label for="languages" class="col-10 offset-1 mb-2">
                 Número de idiomas
             </label>
-            <div class="col-8 offset-3 col-sm-6 offset-sm-0 d-flex">
+            <div class="col-8 offset-3 d-flex">
                 <button class="btn btn-warning fw-bolder"
                     (click)="add('languages')">
                     <span>&#xFF0B;</span>
                 </button>
+                <!-- form-control class needed to bs5 styling valid fields (.was-validated .form-control:valid) -->
+                <!-- form-control has width: 100%, the bs5 grid format must be set on the parent element (usually an input group)-->
                 <input id="languages" inputmode="numeric" formControlName="languages" 
                     (keydown)="onKeydown($event)" 
-                    (input)="setCount()" class="form-control fs-3">
+                    (input)="setCount()" class="form-control ng-touched fs-3">
                 <button class="btn btn-warning fw-bolder"
                     (click)="remove('languages')">
                     <span>&#x2014;</span>
