@@ -3,6 +3,7 @@ import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from
 import { PricesService } from '../services/prices.service';
 import { Dictionary } from '../utils/Dictionary';
 import { BudgetExistsValidator } from '../utils/CustomValidators';
+import { formatDate } from '@angular/common';
 
 @Component({
     selector: 'app-home',
@@ -29,19 +30,19 @@ export class HomeComponent implements OnInit{
     }
     
     ngOnInit(): void {
-        this.checkoutForm.reset();
         this.checkoutForm = this.formBuilder.group({
-            name: new FormControl('', {
+            name: new FormControl("", {
                 validators: [Validators.required, Validators.minLength(5)],
                 asyncValidators: [this.budgetExistsValidator.validate.bind(this.budgetExistsValidator)],
                 updateOn: 'blur'
             }),
             customer: ["", [Validators.required, Validators.minLength(5)]],
+            date: [formatDate(new Date(), 'yyyy-MM-dd', "es-ES"), [Validators.required]],
             website: [false, [() => this.priceOk ? null : {"detail": true}]], // Detail website error
             consulting: false,
             marketing: false,
             total: [0, [(control: AbstractControl) => control.value > 0 ? null : {"required": true}]] // Error if total is zero
-        });
+        })
     }
    
     protected onClick = (id: string) => {
@@ -52,8 +53,11 @@ export class HomeComponent implements OnInit{
 
     protected getError = (field: string) => {
         const errors = this.checkoutForm.get(field)?.errors ?? {};
-        const subject = field === "name" ?  "El nombre del presupuesto" : "El nombre del cliente";
+        const subject = field === "name" ?  "El nombre del presupuesto" 
+            : field === "customer" ? "El nombre del cliente" : "La fecha del presupuesto";
 
+        if (field == "date")
+            return subject + " es obligatoria."
         if (errors['required']) 
             return subject + " es obligatorio.";
         if (errors['minlength']) 
@@ -75,10 +79,20 @@ export class HomeComponent implements OnInit{
     protected addBudget = () => {
         this.pricesService.addBudget(
             this.checkoutForm.get("name")?.value,
-            this.checkoutForm.get("customer")?.value
+            this.checkoutForm.get("customer")?.value,
+            this.checkoutForm.get("date")?.value
         );
         this.status.forEach((_, key, dict) => dict.val[key] = false);
         this.priceOk = true;
-        this.checkoutForm.reset()
+
+        this.checkoutForm.reset({
+            name: "",
+            customer: "", 
+            date: formatDate(new Date(), 'yyyy-MM-dd', "es-ES"),
+            website: false,
+            consulting: false,
+            marketing: false,
+            total: 0
+        })
     }
 }
