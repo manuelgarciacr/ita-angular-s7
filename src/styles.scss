@@ -53,7 +53,7 @@ form.was-validated input.form-control.ng-touched.ng-invalid:focus, .form-control
 .cls-modal.modal.show {
     display: flex!important; 
     flex-direction: column; 
-    justify-content: end
+    justify-content: flex-end
 }
 
 @include media-breakpoint-up(sm) {

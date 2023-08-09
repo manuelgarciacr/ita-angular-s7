@@ -5,6 +5,11 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { minTextNumberValidator } from '../utils/CustomValidators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
+const formGroup = {
+    pages: [1, [minTextNumberValidator(1)]],
+    languages: new FormControl(1, minTextNumberValidator(1)) // Its Ok too
+}
+
 @Component({
     selector: 'app-panel',
     templateUrl: './panel.component.html',
@@ -18,28 +23,27 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
     ]
  })
 export class PanelComponent implements OnInit, OnDestroy {
-    @Output() private changeEmitter = new EventEmitter<[number, boolean]>() // Total price and panel error if true
-    protected checkoutForm: FormGroup;
+    @Output() private changeEmitter = new EventEmitter<[number, number, number]>() // Total price and panel error if true
+    protected checkoutForm: FormGroup = this.formBuilder.group({});
     protected modalText = 'páginas';
 
     constructor(private formBuilder: FormBuilder, 
         protected pricesService: PricesService,
         protected modalService: NgbModal) {
-
-        this.checkoutForm = this.formBuilder.group({
-            pages: [1, [minTextNumberValidator(1)]],
-            languages: new FormControl(1, minTextNumberValidator(1)) // Its Ok too
-        });
     }
 
-    ngOnInit(): void {       
-        this.setCount(); // This call can perhaps also be made within the constructor, but it's not good practice..
+    ngOnInit(): void {  
+        const pages = this.pricesService.pagesCnt;
+        const languages = this.pricesService.languagesCnt;
+
+        this.checkoutForm = this.formBuilder.group(formGroup);
+        this.checkoutForm.reset({pages: pages, languages: languages});
+        this.setCount() // This call can perhaps also be made within the constructor, but it's not good practice..
     }
 
     ngOnDestroy(): void {
-        // NG0100: ExpressionChangedAfterItHasBeenCheckedError:
-        // Resetting the counters before exiting prevents the NG0100 error
-        this.pricesService.resetBudget()
+        this.pricesService.pagesCnt = 1;
+        this.pricesService.languagesCnt = 1
     }
 
     protected onKeydown = (ev: KeyboardEvent) => /^[\D]$/.test(ev.key)
@@ -52,7 +56,7 @@ export class PanelComponent implements OnInit, OnDestroy {
         this.pricesService.pagesCnt = pages;
         this.pricesService.languagesCnt = languages;
 
-        this.changeEmitter.emit(this.pricesService.totalPrice)
+        this.changeEmitter.emit(this.pricesService.totalAmount)
     };
 
     protected add = (ctrl: string) => {

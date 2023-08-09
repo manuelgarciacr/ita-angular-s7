@@ -11,7 +11,8 @@
             <div class="col-10 offset-1 col-sm-9 offset-sm-2 me-3 my-3">
                 <!-- form-control class needed to bs5 styling valid fields (.was-validated .form-control:valid) -->
                 <!-- form-control has width: 100%, the bs5 grid format must be set on the parent element (usually an input group)-->
-                <input id="name" formControlName="name" placeholder="Nombre presupuesto" class="form-control fs-3">
+                <input id="name" formControlName="name" placeholder="Nombre presupuesto" 
+                    class="form-control fs-3">
             </div>
             <div class="text-danger text-end col-10 offset-1 col-sm-9 offset-sm-2 my-3"
                 *ngIf="checkoutForm.get('name')!.invalid && checkoutForm.get('name')!.touched">
@@ -26,7 +27,8 @@
             <div class="col-10 offset-1 col-sm-9 offset-sm-2 me-3 my-3">
                 <!-- form-control class needed to bs5 styling valid fields (.was-validated .form-control:valid) -->
                 <!-- form-control has width: 100%, the bs5 grid format must be set on the parent element (usually an input group)-->
-                <input id="customer" formControlName="customer" placeholder="Nombre cliente" class="form-control fs-3">
+                <input id="customer" formControlName="customer" placeholder="Nombre cliente" 
+                    class="form-control fs-3">
             </div>
             <div class="text-danger text-end col-10 offset-1 col-sm-9 offset-sm-2 my-3"
                 *ngIf="checkoutForm.get('customer')!.invalid && checkoutForm.get('customer')!.touched">
@@ -41,7 +43,8 @@
             <div class="col-10 offset-1 col-sm-9 offset-sm-2 me-3 my-3">
                 <!-- form-control class needed to bs5 styling valid fields (.was-validated .form-control:valid) -->
                 <!-- form-control has width: 100%, the bs5 grid format must be set on the parent element (usually an input group)-->
-                <input id="date" type="date" formControlName="date" placeholder="Fecha presupuesto" class="form-control fs-3">
+                <input id="date" type="date" formControlName="date" placeholder="Fecha presupuesto" 
+                    class="form-control fs-3">
             </div>
             <div class="text-danger text-end col-10 offset-1 col-sm-9 offset-sm-2 my-3"
                 *ngIf="checkoutForm.get('date')!.invalid && checkoutForm.get('date')!.touched">
@@ -50,8 +53,7 @@
         </div>
 
         <div class="d-flex align-items-center my-3">
-            <input id="website" type="checkbox" formControlName="website" class="flex-shrink-0 wr-4 hr-4 me-3"
-                (click)="onClick('website')">
+            <input id="website" type="checkbox" formControlName="website" class="flex-shrink-0 wr-4 hr-4 me-3">
             <label for="website">
                 Una página web (500€)
             </label>
@@ -59,16 +61,14 @@
         <app-panel *ngIf="checkoutForm.get('website')?.value" (changeEmitter)="pricesChange($event)"></app-panel>
 
         <div class="d-flex align-items-center my-3">
-            <input id="consulting" type="checkbox" formControlName="consulting" class="flex-shrink-0 wr-4 hr-4 me-3"
-                (click)="onClick('consulting')">
+            <input id="consulting" type="checkbox" formControlName="consulting" class="flex-shrink-0 wr-4 hr-4 me-3">
             <label for="consulting">
                 Una consultoría SEO (300€)
             </label>
         </div>
 
         <div class="d-flex align-items-center my-3">
-            <input id="marketing" type="checkbox" formControlName="marketing" class="flex-shrink-0 wr-4 hr-4 me-3"
-                (click)="onClick('marketing')">
+            <input id="marketing" type="checkbox" formControlName="marketing" class="flex-shrink-0 wr-4 hr-4 me-3">
             <label for="marketing">
                 Una campaña de Google Ads (200€)
             </label>

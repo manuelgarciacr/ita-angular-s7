@@ -1,5 +1,8 @@
 # ItaAngularS7
 
+http://localhost:4200/calculator?name=Presupuesto%20de%20prueba&customer=Manuel&date=2023-08-01&website=true&pages=2&languages=3&consulting=true&marketing=true
+
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.1.5.
 
 ## Development server

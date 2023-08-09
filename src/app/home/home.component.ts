@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { PricesService } from '../services/prices.service';
-import { Dictionary } from '../utils/Dictionary';
 import { BudgetExistsValidator } from '../utils/CustomValidators';
 import { formatDate } from '@angular/common';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 
 @Component({
     selector: 'app-home',
@@ -15,84 +15,189 @@ import { formatDate } from '@angular/common';
         }
     `],
     host: {
-        class:'container-fluid'
+        class: 'container-fluid'
     }
 })
-export class HomeComponent implements OnInit{
-    protected status = new Dictionary({"website": false, "consulting": false, "marketing": false}); // Checkbox status
-    protected priceOk = true; // It's ok if the web detail prices are ok
+export class HomeComponent implements OnInit {
     protected checkoutForm: FormGroup = this.formBuilder.group({});
 
-    constructor(private formBuilder: FormBuilder, 
+    constructor(private formBuilder: FormBuilder,
         protected pricesService: PricesService,
-        private budgetExistsValidator: BudgetExistsValidator) {
-        addEventListener("beforeunload", () => this.checkoutForm.reset())         
+        private budgetExistsValidator: BudgetExistsValidator,
+        private route: ActivatedRoute,
+        private router: Router) {
+        addEventListener("beforeunload", () => this.checkoutForm.reset())
     }
-    
+
     ngOnInit(): void {
-        this.checkoutForm = this.formBuilder.group({
+        const params = this.route.snapshot.queryParams;
+        const date = formatDate(new Date(), 'yyyy-MM-dd', "es-ES");
+        const formGroup = {
             name: new FormControl("", {
                 validators: [Validators.required, Validators.minLength(5)],
                 asyncValidators: [this.budgetExistsValidator.validate.bind(this.budgetExistsValidator)],
-                updateOn: 'blur'
             }),
             customer: ["", [Validators.required, Validators.minLength(5)]],
-            date: [formatDate(new Date(), 'yyyy-MM-dd', "es-ES"), [Validators.required]],
-            website: [false, [() => this.priceOk ? null : {"detail": true}]], // Detail website error
+            date: [date, [Validators.required]],
+            website: false,
+            pages: 0,
+            languages: 0,
             consulting: false,
             marketing: false,
-            total: [0, [(control: AbstractControl) => control.value > 0 ? null : {"required": true}]] // Error if total is zero
-        })
+            total: [0, [(control: AbstractControl) => control.value > 0 ? null : { "required": true }]] // Error if total is zero
+        }
+        const website = params["website"] == "true" ? true : false;
+        const consulting = params["consulting"] == "true" ? true : false;
+        const marketing = params["marketing"] == "true" ? true : false;
+        const pages = params["pages"] == undefined ? 0 : parseInt(params["pages"]);
+        const languages = params["languages"] == undefined ? 0 : parseInt(params["languages"]);
+        const values = {
+            name: params['name'] ?? "",
+            customer: params["customer"] ?? "",
+            date: params["date"] ?? date,
+            website: website,
+            pages: pages,
+            languages: languages,
+            consulting: consulting,
+            marketing: marketing,
+            total: 0
+        }
+
+        if (website)
+            this.onClick("website", website);
+
+        if (consulting)
+            this.onClick("consulting", consulting);
+
+        if (marketing)
+            this.onClick("marketing", marketing);
+
+        if (pages > 0)
+            this.pricesService.pagesCnt = pages;
+
+        if (languages > 0)
+            this.pricesService.languagesCnt = languages;
+
+        this.checkoutForm = this.formBuilder.group(formGroup, { validators: (control: AbstractControl) => {
+            const website = control.get("website")?.value;
+            const pages = control.get("pages")?.value;
+            const languages = control.get("languages")?.value;
+            if ( !website )
+                return null;
+            if ( pages > 0 && languages > 0 )
+                return null;
+            return {"detail": true}
+        }});
+
+        this.checkoutForm.reset(values);
+        this.setQueryParams()
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        this.checkoutForm.get("name")?.valueChanges.subscribe(_ => this.setQueryParams());
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        this.checkoutForm.get("customer")?.valueChanges.subscribe(_ => this.setQueryParams());
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        this.checkoutForm.get("date")?.valueChanges.subscribe(_ => this.setQueryParams());
+        this.checkoutForm.get("website")?.valueChanges.subscribe(v => this.onClick("website", v));
+        this.checkoutForm.get("consulting")?.valueChanges.subscribe(v => this.onClick("consulting", v));
+        this.checkoutForm.get("marketing")?.valueChanges.subscribe(v => this.onClick("marketing", v));
     }
-   
-    protected onClick = (id: string) => {
-        this.status.val[id] = !this.status.val[id];
-        this.pricesService.basePrice = this.status;
-        this.pricesChange(this.pricesService.totalPrice)
+
+    private onClick = (key: string, value: boolean) => {
+        this.pricesService.amount = [key, value];
+        this.pricesChange(this.pricesService.totalAmount)
     }
 
     protected getError = (field: string) => {
         const errors = this.checkoutForm.get(field)?.errors ?? {};
-        const subject = field === "name" ?  "El nombre del presupuesto" 
+        const subject = field === "name" ? "El nombre del presupuesto"
             : field === "customer" ? "El nombre del cliente" : "La fecha del presupuesto";
 
         if (field == "date")
             return subject + " es obligatoria."
-        if (errors['required']) 
+        if (errors['required'])
             return subject + " es obligatorio.";
-        if (errors['minlength']) 
-            return subject + ` debe tener al menos ${ errors['minlength'].requiredLength } caracteres.`;
+        if (errors['minlength'])
+            return subject + ` debe tener al menos ${errors['minlength'].requiredLength} caracteres.`;
         if (errors['budgetExists'])
             return subject + " ya existe."
         return subject + " no es válido."
     }
 
-    protected pricesChange = (price: [number, boolean]) => {
-        const [total, priceOk] = price;
+    protected pricesChange = (price: [number, number, number]) => {
+        const [total, pages, languages] = price;
 
-        this.priceOk = priceOk;
         this.checkoutForm.get("total")?.setValue(total);
-        this.checkoutForm.get("website")?.updateValueAndValidity();
         this.checkoutForm.get("total")?.updateValueAndValidity();
+
+        this.checkoutForm.get("pages")?.setValue(pages);
+        this.checkoutForm.get("languages")?.setValue(languages);
+        this.setQueryParams()
     }
 
     protected addBudget = () => {
         this.pricesService.addBudget(
-            this.checkoutForm.get("name")?.value,
-            this.checkoutForm.get("customer")?.value,
-            this.checkoutForm.get("date")?.value
+            this.checkoutForm.get("name")?.value?.trim() ?? "",
+            this.checkoutForm.get("customer")?.value?.trim() ?? "",
+            this.checkoutForm.get("date")?.value?.trim() ?? ""
         );
-        this.status.forEach((_, key, dict) => dict.val[key] = false);
-        this.priceOk = true;
 
         this.checkoutForm.reset({
             name: "",
-            customer: "", 
+            customer: "",
             date: formatDate(new Date(), 'yyyy-MM-dd', "es-ES"),
             website: false,
+            pages: 0,
+            languages: 0,
             consulting: false,
             marketing: false,
             total: 0
-        })
+        });
+
+        this.setQueryParams()
+    }
+
+    public setQueryParams() {
+        const name = this.checkoutForm.get("name")?.value?.trim() ?? "";
+        const customer = this.checkoutForm.get("customer")?.value?.trim() ?? "";
+        const date = this.checkoutForm.get("date")?.value?.trim() ?? "";
+        const website = this.checkoutForm.get("website")?.value;
+        const pages = this.checkoutForm.get("pages")?.value;
+        const languages = this.checkoutForm.get("languages")?.value;
+        const consulting = this.checkoutForm.get("consulting")?.value;
+        const marketing = this.checkoutForm.get("marketing")?.value
+        const params: Params = [];
+
+        if (name.length > 0)
+            params["name"] = name;
+
+        if (customer.length > 0)
+            params["customer"] = customer;
+
+        if (date.length > 0)
+            params["date"] = date;
+
+        if (website){
+            params["website"] = "true";
+            if (pages !== undefined){
+                params["pages"] = pages;
+                params["languages"] = languages
+            }
+        }
+
+        if (consulting)
+            params["consulting"] = "true";
+
+        if (marketing)
+            params["marketing"] = "true";
+
+        this.router.navigate(
+            [],
+            {
+                relativeTo: this.route,
+                queryParams: params,
+                // queryParamsHandling: 'merge', // remove to replace all query params by provided
+            }
+        )
     }
 }

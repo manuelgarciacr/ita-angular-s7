@@ -47,8 +47,9 @@ export class PricesService {
         this._languagesCnt = count
     }
 
-    set basePrice(status: Dictionary<boolean>) {
-        status.forEach((val, key) => this._amounts.val[key] = val ? prices.val[key] : 0)
+    set amount(item: [string, boolean]) {
+        const [key, value] = item;
+        this._amounts.setVal(key, value ? prices.val(key) : 0)
     }
 
     set order(order: number) { // 0: insertion, 1: name, 2: date
@@ -65,24 +66,22 @@ export class PricesService {
 
     // Getters
 
-    get totalPrice(): [number, boolean] {
-        const hasWeb = this._amounts.val["website"] > 0;
-        const baseImport = this._amounts.reduce((prev, val) => prev + val);
-        const detailPrice = this._pagesCnt * this._languagesCnt * 30;
-        const detailOk = detailPrice > 0;
+    get totalAmount(): [number, number, number] {
+        const hasWeb = this._amounts.val("website") > 0;
+        //const baseImport = this._amounts.val("website") + this._amounts.val("consulting") + this._amounts.val("marketing")
+        const baseAmount = this._amounts.reduce((prev, val) => prev + val);
+        const detailAmount = this._pagesCnt * this._languagesCnt * 30;
+        const price = hasWeb ? baseAmount + detailAmount : baseAmount;
 
-        const price = hasWeb ? baseImport + detailPrice : baseImport;
-        const priceOk = hasWeb ? detailOk : true;
-
-        return [price, priceOk]
+        return [price, this._pagesCnt, this._languagesCnt]
     }
 
     get budgets(): Budget[] {
         const normalize = (str: string) => str
-            .replace(/\s/g, '')
+            .replace(/\s/g, '') // remove spaces
             .toUpperCase()
             .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '');
+            .replace(/[\u0300-\u036f]/g, ''); // remove accents
         const filter = normalize(this._filter);
         const budgets = this._budgets.filter(v => {
             const name = normalize(v.name);
@@ -105,6 +104,14 @@ export class PricesService {
         return budgets.sort(fn)
     }
 
+    get pagesCnt() {
+        return this._pagesCnt
+    }
+
+    get languagesCnt() {
+        return this._languagesCnt
+    }
+
     get order() {
         return this._order
     }
@@ -116,7 +123,7 @@ export class PricesService {
     // Methods
 
     addBudget = (name: string, customer: string, dateStr: string) => {
-        const hasWeb = this._amounts.val["website"] > 0;
+        const hasWeb = this._amounts.val("website") > 0;
         const date = new Date(dateStr);
         
         this._budgets.push({
@@ -125,9 +132,9 @@ export class PricesService {
             date: date,
             pages: this._pagesCnt,
             languages: this._languagesCnt,
-            website: hasWeb ? this._amounts.val["website"] + (this._pagesCnt * this._languagesCnt * 30) : 0,
-            consulting: this._amounts.val["consulting"],
-            marketing: this._amounts.val["marketing"]
+            website: hasWeb ? this._amounts.val("website") + (this._pagesCnt * this._languagesCnt * 30) : 0,
+            consulting: this._amounts.val("consulting"),
+            marketing: this._amounts.val("marketing")
         })
     }
 
@@ -141,7 +148,7 @@ export class PricesService {
     resetBudget = () => {
         this.pagesCnt = 1;
         this.languagesCnt = 1;
-        this._amounts.forEach((_, key, dict) => dict.val[key] = 0)
+        this._amounts.forEach((_, key, dict) => dict.setVal(key, 0))
     }
 
     budgetExists(name: string): Observable<boolean> {
