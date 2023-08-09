@@ -1,10 +1,14 @@
 <h1 class="my-4">Presupuestos Guardados</h1>
 <hr>
-<div class="btn-group">
+<div>
     <label class="me-4">Orden</label>
     <button type="button" class="btn btn-primary cls-order active" aria-pressed="true" data-bs-toggle="button" autocomplete="off" (click)="changeOrder(0)">Inserción<i class="bi ms-2" [class.bi-caret-down-fill]="!pricesService.descending" [class.bi-caret-up-fill]="pricesService.descending"></i></button>
     <button type="button" class="btn btn-primary cls-order" data-bs-toggle="button" autocomplete="off" (click)="changeOrder(1)">Nombre<i class="bi ms-2 d-none" [class.bi-caret-down-fill]="!pricesService.descending" [class.bi-caret-up-fill]="pricesService.descending"></i></button>
     <button type="button" class="btn btn-primary cls-order" data-bs-toggle="button" autocomplete="off" (click)="changeOrder(2)">Fecha<i class="bi ms-2 d-none" [class.bi-caret-down-fill]="!pricesService.descending" [class.bi-caret-up-fill]="pricesService.descending"></i></button>
+    <div class="input-group mt-2">
+        <input type="text" class="form-control" placeholder="Buscar" aria-label="Buscar por nombre de presupuesto" aria-describedby="search-icon" (input)="searchString($event)">
+        <span class="input-group-text" id="search-icon"><i class="bi bi-search"></i></span>
+    </div>
 </div>
 <hr>
 <div *ngFor="let budget of pricesService.budgets" class="card">

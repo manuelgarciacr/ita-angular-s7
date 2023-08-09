@@ -24,27 +24,27 @@ export interface Budget {
 })
 export class PricesService {
     private _budgets: Budget[] = [];
-
     // NG0100: ExpressionChangedAfterItHasBeenCheckedError:
     // Initializing the counters before startup prevents the NG0100 error
     private _pagesCnt = 1;
     private _languagesCnt = 1;
-
     private _amounts = new Dictionary({
         "website": 0, 
         "consulting": 0, 
         "marketing": 0
     });
-    
     private _order = 0; // 0: insertion, 1: name, 2: date
     private _descending = false;
+    private _filter = "";
+
+    // Setters
 
     set pagesCnt(count: number) {
-        this._pagesCnt = count;
+        this._pagesCnt = count
     }
 
     set languagesCnt(count: number) {
-        this._languagesCnt = count;
+        this._languagesCnt = count
     }
 
     set basePrice(status: Dictionary<boolean>) {
@@ -59,11 +59,15 @@ export class PricesService {
         this._descending = descending
     }
 
+    set filter(filter: string) {
+        this._filter = filter
+    }
+
     // Getters
 
     get totalPrice(): [number, boolean] {
         const hasWeb = this._amounts.val["website"] > 0;
-        const baseImport = this._amounts.reduce((prev, val) => prev + val)
+        const baseImport = this._amounts.reduce((prev, val) => prev + val);
         const detailPrice = this._pagesCnt * this._languagesCnt * 30;
         const detailOk = detailPrice > 0;
 
@@ -74,21 +78,31 @@ export class PricesService {
     }
 
     get budgets(): Budget[] {
-        if (this._order == 0) {// 0: insertion, 1: name, 2: date
-            if (this._descending)
-                return [...this._budgets].reverse();
-
-            return [...this._budgets];
-        }
-        
+        const normalize = (str: string) => str
+            .replace(/\s/g, '')
+            .toUpperCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+        const filter = normalize(this._filter);
+        const budgets = this._budgets.filter(v => {
+            const name = normalize(v.name);
+            return name.includes(filter)
+        });
         const fn = this._order == 1 
             ? (a: Budget, b: Budget) => a.name > b.name ? 1 : -1 // The names can't be equals
             : (a: Budget, b: Budget) => a.date > b.date ? 1 : (a.date < b.date ? -1 : 0);
 
-        if (this._descending)
-            return [...this._budgets].sort(fn).reverse();
+        if (this._order == 0) {// 0: insertion, 1: name, 2: date
+            if (this._descending)
+                return budgets.reverse();
 
-        return [...this._budgets].sort(fn)
+            return budgets
+        }
+        
+        if (this._descending)
+            return budgets.sort(fn).reverse();
+
+        return budgets.sort(fn)
     }
 
     get order() {

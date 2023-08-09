@@ -32,4 +32,6 @@ export class BudgetListComponent {
         buttons[idx].classList.add("active");
         buttons[idx].firstElementChild?.classList.remove("d-none")
     }
+
+    searchString = (ev: Event) => this.pricesService.filter = (ev.target as HTMLInputElement).value
 }
